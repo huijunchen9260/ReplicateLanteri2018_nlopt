@@ -8,6 +8,13 @@ module neoclassical_nlopt_ver2
     use nlopt_enum
     implicit none
 
+    ! ------ !
+    ! output !
+    ! ------ !
+    character(len=*), parameter :: outDir = "./results/"
+    character(len=1), parameter :: tab = char(9)
+
+
     ! ---------- !
     ! parameters !
     ! ---------- !
@@ -43,6 +50,8 @@ module neoclassical_nlopt_ver2
     ! --------- !
     real(rk), dimension(:, :), allocatable :: v, gk
 
+    integer(ik) :: objcount = 0
+
     ! ------------------- !
     ! func_data for nlopt !
     ! ------------------- !
@@ -56,11 +65,12 @@ contains
     subroutine valueiter()
 
         integer(ik) :: indk, inde, indef
-        integer(ik) :: iter, maxiter, iunit
+        integer(ik) :: iter, maxiter
         real(rk), dimension(knum, enum) :: tv, tgk, ev
         real(rk), dimension(knum) :: evvec
         real(rk) :: dist, vTol, distv, distgk
         real(rk) :: epsval, kval, tempval, nval, yval
+        type(value_data) :: vdata
 
         iter = 0_ik
         maxiter = 1000_ik
@@ -101,8 +111,9 @@ contains
 
             do inde = 1, enum, 1
                 epsval = egrid(inde)
-                evvec = ev(:, inde)
-                call kupTarget(evvec, epsval)
+                vdata%evvec = ev(:, inde)
+                call kupTarget(vdata, epsval)
+                objcount = 0
             enddo
 
 
@@ -112,27 +123,30 @@ contains
 
     end subroutine valueiter
 
-    subroutine kupTarget(evvec, epsval)
+    subroutine kupTarget(vdata, epsval)
         real(rk) :: epsval, fmax
-        real(rk), dimension(:) :: evvec
-        real(rk), dimension(knum) :: guess
+        real(rk), dimension(1) :: guess
         integer :: stat
-        intent(in) :: evvec, epsval
+        intent(in) :: vdata, epsval
         type(nlopt_opt) :: opt
+        type(value_data) :: vdata
 
         guess = kgrid(knum/2)
 
-        ! write(*, *) knum/2
+        ! call create(opt, algorithm_from_string("LN_SBPLX"), int(knum, 4))
 
-        ! call pprint(guess)
-
-        call create(opt, algorithm_from_string("LN_SBPLX"), int(knum, 4))
+        ! remember that the last number is in int4 but not 8
+        call create(opt, algorithm_from_string("LN_SBPLX"), 1)
         call opt%set_lower_bounds(kgrid(1))
         call opt%set_upper_bounds(kgrid(knum))
-        call opt%set_xtol_rel(tol)
-        call opt%set_max_objective(nlopt_func(kupObj, evvec))
-        call opt%optimize(guess, fmax, stat)
+        associate( f => nlopt_func(kupObj, vdata) )
+            call opt%set_xtol_rel(tol)
+            call opt%set_max_objective(f)
+            call opt%optimize(guess, fmax, stat)
+        end associate
         call destroy(opt)
+
+        write(*, *) fmax
 
     end subroutine kuptarget
 
@@ -159,6 +173,12 @@ contains
         evval = vdata%evvec(kidx)*kw + vdata%evvec(kidx+1_ik)*(1.0_rk - kw)
 
         f = -1.0_rk*guess(1) + beta*evval
+
+        ! call pprint(guess)
+        ! write(*, *) "dim of guess is ", size(guess)
+        objcount = objcount + 1
+
+        ! write(*, *) "guess(1) = ", guess, "evval = ", evval, ", count = ", objcount
 
     end function kupObj
 

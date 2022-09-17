@@ -8,6 +8,7 @@ program main
 
     call valueiter()
 
+    call pprint(kgrid)
 
 
 
