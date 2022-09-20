@@ -1,5 +1,6 @@
 module io
-    use numerics, only: rk, ik
+
+    use iso_Fortran_env, only: rk => real64, ik => int32
     implicit none
     private
     public operator(.f.), operator(.d.), pprint, head, tail
@@ -50,6 +51,25 @@ contains
         inquire( file=trim(dirname // '.' ), exist=res )
     end function directory_exists
 
+    ! subroutine pprint_3d_real(mat, 1dbegin, 1dend, 2dbegin, 2dend, 3dbegin, 3dend)
+    !     real(rk), intent(in) :: mat(:, :, :)
+    !     integer(ik), optional :: 1dbegin, 1dend, 2dbegin, 2dend, 3dbegin, 3dend
+    !     integer(ik) :: 1b, 1e, 2b, 2e, 3b, 3e, res(3), i, j, k
+    !     character(len=30) :: f, str(3)
+
+    !     res = shape(mat)
+    !     1b = 1; if (present(1dbegin)) 1b = 1dbegin
+    !     1e = res(1); if (present(1dend)) 1e = 1dend
+    !     2b = 2; if (present(2dbegin)) 2b = 2dbegin
+    !     2e = res(2); if (present(2dend)) 2e = 2dend
+    !     3b = 3; if (present(3dbegin)) 3b = 3dbegin
+    !     3e = res(3); if (present(3dend)) 3e = 3dend
+
+    !     write(unit=str, fmt='(I0)') res
+    !     f = trim('(' // trim(str(2)) // 'g13.5)')
+
+    ! end subroutine pprint_3d_real
+
     subroutine pprint_2d_real(mat, rowbegin, rowend, colbegin, colend)
         real(rk), intent(in) :: mat(:, :)
         integer(ik), optional :: rowbegin, rowend, colbegin, colend
@@ -91,7 +111,7 @@ contains
     end subroutine pprint_2d_int
 
     subroutine pprint_1d_real(mat, rowbegin, rowend)
-        real(ik), intent(in) :: mat(:)
+        real(rk), intent(in) :: mat(:)
         integer(ik), optional :: rowbegin, rowend
         integer(ik) :: res, i, rb, re
         character(len=30) :: f, s, str

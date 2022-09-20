@@ -1,11 +1,12 @@
 module numerics
 
     use, intrinsic :: iso_Fortran_env, only : &
-        ik => int64, rk => real64, OUTPUT_UNIT, INPUT_UNIT, ERROR_UNIT
+        ik => int32, rk => real64, OUTPUT_UNIT, INPUT_UNIT, ERROR_UNIT
     implicit none
     private
     public :: rk, ik, OUTPUT_UNIT, INPUT_UNIT, ERROR_UNIT
-    public :: linspace, logspace, tauchen, gridlookup, gridweight, linear_interpolation, cumsum, rouwenhorst, eye
+    ! public :: linspace, logspace, tauchen, gridlookup, gridweight, linear_interpolation, cumsum, rouwenhorst, eye
+    public :: logspace, tauchen, gridlookup, gridweight, linear_interpolation, cumsum, rouwenhorst, eye
 
 contains
 
@@ -178,7 +179,7 @@ end subroutine tauchen
 subroutine rouwenhorst(rho, sigmas, n, z, pi)
     integer(ik), intent(in):: n
     integer(ik) :: i
-    real(rk):: p, q, zvar, epsilon, y(n)
+    real(rk):: p, q, zvar, epsilon, y(n-2_ik)
     real(rk), intent(in):: rho, sigmas
     real(rk), intent(out):: z(n), pi(n,n)
     real(rk), dimension(:,:), allocatable:: hlag, h

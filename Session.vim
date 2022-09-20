@@ -3,7 +3,7 @@ let s:so_save = &g:so | let s:siso_save = &g:siso | setg so=0 siso=0 | setl so=-
 let v:this_session=expand("<sfile>:p")
 silent only
 silent tabonly
-cd ~/mnt/home/huijunchen/Documents/Google_Drive/Ohio_related/PhD_Fourth_Year/research/nlopt_test/neoclassical_nlopt_ver2
+cd ~/mnt/home/huijunchen/Documents/Google_Drive/Ohio_related/PhD_Fourth_Year/research/nlopt_test/ReplicateLanteri2018/
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
@@ -14,11 +14,13 @@ else
   set shortmess=aoO
 endif
 badd +0 app/main.f90
-badd +0 src/neoclassical_nlopt_ver2.f90
+badd +1 src/ReplicateLanteri2018.f90
+badd +0 src/io.f90
 argglobal
 %argdel
 $argadd app/main.f90
 set stal=2
+tabnew +setlocal\ bufhidden=wipe
 tabnew +setlocal\ bufhidden=wipe
 tabrewind
 edit app/main.f90
@@ -33,14 +35,34 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 1 - ((0 * winheight(0) + 15) / 30)
+let s:l = 7 - ((6 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 1
-normal! 0
+keepjumps 7
+normal! 067|
 tabnext
-edit src/neoclassical_nlopt_ver2.f90
+edit src/ReplicateLanteri2018.f90
+argglobal
+balt app/main.f90
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let &fdl = &fdl
+let s:l = 15 - ((6 * winheight(0) + 15) / 30)
+if s:l < 1 | let s:l = 1 | endif
+keepjumps exe s:l
+normal! zt
+keepjumps 15
+normal! 054|
+tabnext
+edit src/io.f90
 argglobal
 balt app/main.f90
 setlocal fdm=manual
